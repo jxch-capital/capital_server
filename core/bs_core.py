@@ -98,8 +98,9 @@ def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.n
     json_arr = []
     for df in df_arr:
         json_str = df.to_json(orient='records')
-        name = query_name_by_code(df['code'][0])
-        json_arr.append('\"' + name + '\":' + json_str + '')
+        if json_str != '[]':
+            name = query_name_by_code(df['code'][0])
+            json_arr.append('\"' + name + '\":' + json_str + '')
     return '{' + ','.join(json_arr) + '}'
 
 
