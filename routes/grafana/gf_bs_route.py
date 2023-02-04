@@ -15,7 +15,7 @@ fields = {
 
 
 @gf_bs_route.route("/grafana/query_k_json", methods=["post", "get"])
-# @pre.catch(fields)
+@pre.catch(fields)
 def query_k_json():
     service_code = param("service_code", request)
     codes = param_list("codes", request)
