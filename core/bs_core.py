@@ -1,9 +1,14 @@
+import datetime
+import time
+from functools import wraps, lru_cache
+
 import baostock as bs
 import pandas as pd
 
-from functools import wraps, lru_cache
 import utils.stockstats_utils as ssu
-import datetime
+import utils.date_utils as date_utils
+
+bs_date_str_pattern = '%Y-%m-%d'
 
 
 def login():
@@ -14,14 +19,16 @@ def logout():
     bs.logout()
 
 
-def bs_login(a_func):
-    @wraps(a_func)
-    def bs_login_wrap():
-        login()
-        a_func()
-        logout()
+def bs_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            login()
+            return func(*args, **kwargs)
+        finally:
+            logout()
 
-    return bs_login_wrap
+    return wrapper
 
 
 @lru_cache(maxsize=10000, typed=True)
@@ -53,12 +60,8 @@ def rs_to_dataframe(rs):
     return pd.DataFrame(data_list, columns=rs.fields)
 
 
-def now_date_str():
-    return datetime.date.today().strftime('%Y-%m-%d')
-
-
 @lru_cache(maxsize=10000, typed=True)
-def query_daily_k_by_code(code, start_date_str, end_date_str=now_date_str()):
+def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
     rs = bs.query_history_k_data_plus(code,
                                       "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST",
                                       start_date=start_date_str, end_date=end_date_str, frequency="d", adjustflag="3")
@@ -82,7 +85,7 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=now_date_str()):
     return df
 
 
-def query_daily_k_by_codes(codes, start_date_str, end_date_str=now_date_str()):
+def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
     df_arr = []
     for code in codes:
         df = query_daily_k_by_code(code, start_date_str, end_date_str)
@@ -90,7 +93,7 @@ def query_daily_k_by_codes(codes, start_date_str, end_date_str=now_date_str()):
     return df_arr
 
 
-def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=now_date_str()):
+def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
     df_arr = query_daily_k_by_codes(codes, start_date_str, end_date_str)
     json_arr = []
     for df in df_arr:
@@ -100,5 +103,5 @@ def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=now_date_str
     return '{' + ','.join(json_arr) + '}'
 
 
-def query_daily_k_json_by_names(names, start_date_str, end_date_str=now_date_str()):
+def query_daily_k_json_by_names(names, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
     return query_daily_k_json_by_codes(query_codes_by_names(names), start_date_str, end_date_str)
