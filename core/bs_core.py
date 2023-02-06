@@ -36,6 +36,9 @@ def bs_login(func):
 def query_name_by_code(code):
     rs = bs.query_stock_basic(code=code)
     df = rs_to_dataframe(rs)
+    if df.empty:
+        logging.log(logging.INFO, f'No name for code:{code}')
+        return "None"
     return df['code_name'][0]
 
 
@@ -43,6 +46,9 @@ def query_name_by_code(code):
 def query_code_by_name(name):
     rs = bs.query_stock_basic(code_name=name)
     df = rs_to_dataframe(rs)
+    if df.empty:
+        logging.log(logging.INFO, f'No code for name:{name}')
+        return "None"
     return df['code'][0]
 
 

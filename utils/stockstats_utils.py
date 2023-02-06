@@ -21,5 +21,9 @@ def stockstats_default(old_df):
     df['rate_ema60_5_ema'] = ss[['rate_ema60', 'rate_ema60_5_ema']]['rate_ema60_5_ema']
     df['rate_ema120_5_ema'] = ss[['rate_ema120', 'rate_ema120_5_ema']]['rate_ema120_5_ema']
     df['rate_ema200_5_ema'] = ss[['rate_ema200', 'rate_ema200_5_ema']]['rate_ema200_5_ema']
+    df['h_rate_ema20_5_ema'] = df['rate_ema20_5_ema'] - 1
+    df['h_rate_ema60_5_ema'] = df['rate_ema60_5_ema'] - 1
+    df['h_rate_ema120_5_ema'] = df['rate_ema120_5_ema'] - 1
+    df['h_rate_ema200_5_ema'] = df['rate_ema200_5_ema'] - 1
     df.reset_index(inplace=True)
     return df
