@@ -8,6 +8,7 @@ import pandas as pd
 
 import utils.stockstats_utils as ssu
 import utils.date_utils as date_utils
+from utils.cache_utils import daily_cache_manager
 
 bs_date_str_pattern = '%Y-%m-%d'
 
@@ -67,6 +68,7 @@ def rs_to_dataframe(rs):
     return pd.DataFrame(data_list, columns=rs.fields)
 
 
+@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
 def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):

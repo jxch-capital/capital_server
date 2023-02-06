@@ -5,7 +5,7 @@ import pandas_datareader.data as web
 
 logging.basicConfig(level=logging.INFO)
 
-df = pdr_core.data_reader_codes_json(["^CAC"], datetime.datetime(2022, 1, 1))
+df = pdr_core.data_reader_codes_json(["CACX.UK"], datetime.datetime(2022, 1, 1))
 
 
 

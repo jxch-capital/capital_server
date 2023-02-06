@@ -3,10 +3,12 @@ import utils.stockstats_utils as ssu
 import datetime
 import utils.fun_utils as fun_utils
 from functools import lru_cache
+from utils.cache_utils import daily_cache_manager
 
 def_ds = 'stooq'
 
 
+@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
 def data_reader(code, start_date, end_date=datetime.datetime.now(), data_source=def_ds):
