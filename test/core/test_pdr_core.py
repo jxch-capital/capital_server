@@ -5,10 +5,7 @@ import pandas_datareader.data as web
 
 logging.basicConfig(level=logging.INFO)
 
-df = pdr_core.data_reader_codes_json(["CACX.UK"], datetime.datetime(2022, 1, 1))
+df = pdr_core.data_reader_codes_json(["DEXCHUS"], datetime.datetime(2022, 1, 1), data_source="fred")
 
-
-
-
-# df = web.DataReader("^DAX", "stooq", datetime.datetime(2022, 1, 1), datetime.datetime.now())
+# df = web.DataReader("DEXCHUS", "fred", datetime.datetime(2022, 1, 1), datetime.datetime.now())
 print(df)
