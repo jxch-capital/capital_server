@@ -4,7 +4,7 @@ import datetime
 import utils.fun_utils as fun_utils
 from functools import lru_cache
 
-def_ds = 'stooq'
+def_ds = 'yahoo'
 
 
 @lru_cache(maxsize=10000, typed=True)
