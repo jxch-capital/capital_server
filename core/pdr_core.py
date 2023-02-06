@@ -1,10 +1,14 @@
 import pandas_datareader.data as web
 import utils.stockstats_utils as ssu
 import datetime
+import utils.fun_utils as fun_utils
+from functools import lru_cache
 
 def_ds = 'stooq'
 
 
+@lru_cache(maxsize=10000, typed=True)
+@fun_utils.fun_log
 def data_reader(code, start_date, end_date=datetime.datetime.now(), data_source=def_ds):
     df = web.DataReader(code, data_source, start_date, end_date)
     df = ssu.stockstats_default(df)

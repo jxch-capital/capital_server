@@ -1,5 +1,4 @@
-import datetime
-import time
+import utils.fun_utils as fun_utils
 from functools import wraps, lru_cache
 
 import baostock as bs
@@ -61,6 +60,7 @@ def rs_to_dataframe(rs):
 
 
 @lru_cache(maxsize=10000, typed=True)
+@fun_utils.fun_log
 def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
     rs = bs.query_history_k_data_plus(code,
                                       "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST",
