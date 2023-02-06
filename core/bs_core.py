@@ -1,3 +1,5 @@
+import logging
+
 import utils.fun_utils as fun_utils
 from functools import wraps, lru_cache
 
@@ -66,6 +68,9 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date
                                       "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST",
                                       start_date=start_date_str, end_date=end_date_str, frequency="d", adjustflag="3")
     df = rs_to_dataframe(rs)
+    if df.empty:
+        logging.log(logging.INFO, "query_daily_k_by_code: df is empty")
+        return df
     df["open"] = pd.to_numeric(df["open"])
     df["high"] = pd.to_numeric(df["high"])
     df["low"] = pd.to_numeric(df["low"])
