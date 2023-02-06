@@ -30,5 +30,6 @@ def data_reader_codes_json(codes, start_date, end_date=datetime.datetime.now(), 
     for df in df_arr:
         json_str = df.to_json(orient='records')
         if json_str != '[]':
-            json_arr.append('\"' + df['code'][0] + '\":' + json_str + '')
+            code = df['code'][0].replace('.', '').replace('^', '')
+            json_arr.append('\"' + code + '\":' + json_str + '')
     return '{' + ','.join(json_arr) + '}'
