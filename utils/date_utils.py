@@ -11,6 +11,10 @@ def str_to_date(date_str, pattern):
     return datetime.datetime.strptime(date_str, pattern)
 
 
+def today():
+    return dt.now()
+
+
 def now_date_str(pattern):
     return datetime.date.today().strftime(pattern)
 

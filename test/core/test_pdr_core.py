@@ -1,11 +1,6 @@
-import core.pdr_core as pdr_core
-import datetime
-import logging
-import pandas_datareader.data as web
+import core.trading_logic_core as tlc
+import utils.date_utils as date_utils
 
-logging.basicConfig(level=logging.INFO)
+res = tlc.query_breath(date_utils.str_to_date("2020-01-01", "%Y-%m-%d"))
 
-df = pdr_core.data_reader_codes_json(["DEXCHUS"], datetime.datetime(2022, 1, 1), data_source="fred")
-
-# df = web.DataReader("DEXCHUS", "fred", datetime.datetime(2022, 1, 1), datetime.datetime.now())
-print(df)
+print(res)
