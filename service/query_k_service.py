@@ -3,6 +3,8 @@ from enum import Enum
 import core.bs_core as bs_core
 import core.pdr_core as pdr_core
 import utils.date_utils as date_utils
+from utils.cache_utils import daily_cache_manager
+from functools import lru_cache
 
 date_str_pattern = '%Y-%m-%d'
 
@@ -41,13 +43,11 @@ class BSQueryKService(QueryKService):
         return service_code == QueryKServices.BS.value
 
     @staticmethod
-    @bs_core.bs_login
     def query_k(service_code, codes, start_date_str, end_date_str):
         return bs_core.query_daily_k_by_codes(codes, convert_pattern(start_date_str, bs_core.bs_date_str_pattern),
                                               convert_pattern(end_date_str, bs_core.bs_date_str_pattern))
 
     @staticmethod
-    @bs_core.bs_login
     def query_k_json(service_code, codes, start_date_str, end_date_str):
         return bs_core.query_daily_k_json_by_codes(codes, convert_pattern(start_date_str, bs_core.bs_date_str_pattern),
                                                    convert_pattern(end_date_str, bs_core.bs_date_str_pattern))

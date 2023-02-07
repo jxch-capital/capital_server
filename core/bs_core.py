@@ -13,27 +13,39 @@ from utils.cache_utils import daily_cache_manager
 bs_date_str_pattern = '%Y-%m-%d'
 
 
-def login():
-    bs.login()
+class BSLoginManager(object):
+    _is_login = False
+    _login_func = None
 
+    @staticmethod
+    def login(func):
+        if not BSLoginManager._is_login:
+            bs.login()
+            BSLoginManager._is_login = True
+            BSLoginManager._login_func = func
 
-def logout():
-    bs.logout()
+    @staticmethod
+    def logout(func):
+        if BSLoginManager._is_login and BSLoginManager._login_func == func:
+            bs.logout()
+            BSLoginManager._is_login = False
+            BSLoginManager._login_func = None
 
+    @staticmethod
+    def bs_login(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                BSLoginManager.login(func)
+                return func(*args, **kwargs)
+            finally:
+                BSLoginManager.logout(func)
 
-def bs_login(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            login()
-            return func(*args, **kwargs)
-        finally:
-            logout()
-
-    return wrapper
+        return wrapper
 
 
 @lru_cache(maxsize=10000, typed=True)
+@BSLoginManager.bs_login
 def query_name_by_code(code):
     rs = bs.query_stock_basic(code=code)
     df = rs_to_dataframe(rs)
@@ -44,6 +56,7 @@ def query_name_by_code(code):
 
 
 @lru_cache(maxsize=10000, typed=True)
+@BSLoginManager.bs_login
 def query_code_by_name(name):
     rs = bs.query_stock_basic(code_name=name)
     df = rs_to_dataframe(rs)
@@ -71,8 +84,9 @@ def rs_to_dataframe(rs):
 @daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
+@BSLoginManager.bs_login
 def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
-    rs = bs.query_history_k_data_plus(code,
+    rs = bs.query_history_k_data_plus(code.replace('"', ''),
                                       "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST",
                                       start_date=start_date_str, end_date=end_date_str, frequency="d", adjustflag="3")
     df = rs_to_dataframe(rs)
@@ -98,7 +112,11 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date
     return df
 
 
-def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+@daily_cache_manager
+@lru_cache(maxsize=10000, typed=True)
+@BSLoginManager.bs_login
+def query_daily_k_by_codes_cache(codes_str, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    codes = codes_str.replace('"', '').split(',')
     df_arr = []
     for code in codes:
         df = query_daily_k_by_code(code, start_date_str, end_date_str)
@@ -106,7 +124,16 @@ def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_da
     return df_arr
 
 
-def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    return query_daily_k_by_codes_cache(','.join(codes), start_date_str, end_date_str)
+
+
+@daily_cache_manager
+@lru_cache(maxsize=10000, typed=True)
+@BSLoginManager.bs_login
+def query_daily_k_json_by_codes_cache(codes_str, start_date_str,
+                                      end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    codes = codes_str.replace('"', '').split(',')
     df_arr = query_daily_k_by_codes(codes, start_date_str, end_date_str)
     json_arr = []
     for df in df_arr:
@@ -117,5 +144,18 @@ def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.n
     return '{' + ','.join(json_arr) + '}'
 
 
-def query_daily_k_json_by_names(names, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    return query_daily_k_json_by_codes_cache(','.join(codes), start_date_str, end_date_str)
+
+
+@daily_cache_manager
+@lru_cache(maxsize=10000, typed=True)
+@BSLoginManager.bs_login
+def query_daily_k_json_by_names_cache(names_str, start_date_str,
+                                      end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    names = names_str.replace('"', '').split(',')
     return query_daily_k_json_by_codes(query_codes_by_names(names), start_date_str, end_date_str)
+
+
+def query_daily_k_json_by_names(names, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+    return query_daily_k_json_by_names_cache(','.join(names), start_date_str, end_date_str)
