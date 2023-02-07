@@ -4,18 +4,28 @@ from datetime import datetime, date
 from pandas import DataFrame
 import functools
 from service.query_k_service import date_str_pattern
+import time
 
 
-def json_dumps_default_date(obj, fmt=date_str_pattern):
+def json_dumps_default_date(obj, pattern=date_str_pattern):
     if isinstance(obj, datetime):
-        return obj.strftime(fmt)
+        return obj.strftime(pattern)
     elif isinstance(obj, date):
-        return obj.strftime(fmt)
+        return obj.strftime(pattern)
     else:
         return obj
 
 
-def to_json(obj, json_date_fmt_func=json_dumps_default_date):
+def json_dumps_timestamp_date(obj):
+    if isinstance(obj, datetime):
+        return int(obj.timestamp() * 1000)
+    elif isinstance(obj, date):
+        return int(time.mktime(obj.timetuple()) * 1000)
+    else:
+        return obj
+
+
+def to_json(obj, json_date_fmt_func=json_dumps_default_date, pattern=None):
     if type(obj) is str:
         return obj
     if type(obj) is dict or type(obj) is list:
@@ -25,10 +35,10 @@ def to_json(obj, json_date_fmt_func=json_dumps_default_date):
     raise TypeError("不支持的转JSON类型")
 
 
-def return_json(func, json_date_fmt_func=json_dumps_default_date):
+def return_json(func, json_date_fmt_func=json_dumps_default_date, pattern=None):
     @functools.wraps(func)
     def wrapper(*args, **kw):
         res = func(*args, **kw)
-        return to_json(res, json_date_fmt_func)
+        return to_json(res, json_date_fmt_func, pattern)
 
     return wrapper

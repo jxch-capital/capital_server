@@ -34,3 +34,7 @@ def s_timestamp_to_str(timestamp, pattern):
 def new_date_str_pattern(date_str, old_pattern, new_pattern):
     date = str_to_date(date_str, old_pattern)
     return date_to_str(date, new_pattern)
+
+
+def timestamp_to_date(timestamp):
+    return datetime.datetime.fromtimestamp(timestamp).date()
