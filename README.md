@@ -1,6 +1,5 @@
 # capital_server
-
-支持 akshare, baostock, pandas_datareader
+服务端
 
 ## Docker Compose 部署
 
