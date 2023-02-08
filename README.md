@@ -8,7 +8,7 @@
 version: '3.8'
 services: 
   capital-server: 
-    image: jxch/capital-server:latest 
+    image: jxch/capital-server:amd64-latest
     ports: 
       - 15000:5000 
     dns: 
