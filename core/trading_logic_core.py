@@ -4,12 +4,14 @@ from utils.cache_utils import daily_cache_manager
 import json
 import utils.date_utils as date_utils
 from datetime import datetime
+import utils.fun_utils as fun_utils
 
 date_str_pattern = '%Y-%m-%d'
 
 
 @daily_cache_manager
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=1, typed=True)
+@fun_utils.fun_log
 def breath_list_json_str():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
@@ -21,6 +23,9 @@ def breath_list_json_str():
     return res_text
 
 
+@daily_cache_manager
+@lru_cache(maxsize=1, typed=True)
+@fun_utils.fun_log
 def query_breath(start_date, end_date=date_utils.today()):
     obj = {}
     for lis in json.loads(breath_list_json_str()):
@@ -32,5 +37,8 @@ def query_breath(start_date, end_date=date_utils.today()):
     return obj
 
 
+@daily_cache_manager
+@lru_cache(maxsize=1, typed=True)
+@fun_utils.fun_log
 def query_breath_json(start_date, end_date=date_utils.today()):
     return json.dumps(query_breath(start_date, end_date))
