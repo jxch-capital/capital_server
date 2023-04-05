@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import utils.fun_utils as fun_utils
 from functools import wraps, lru_cache
@@ -14,32 +15,40 @@ bs_date_str_pattern = '%Y-%m-%d'
 
 
 class BSLoginManager(object):
-    _is_login = False
-    _login_func = None
+    _login_num = 0
 
     @staticmethod
-    def login(func):
-        if not BSLoginManager._is_login:
-            bs.login()
-            BSLoginManager._is_login = True
-            BSLoginManager._login_func = func
+    def is_login_weak():
+        return BSLoginManager._login_num == 0
 
     @staticmethod
-    def logout(func):
-        if BSLoginManager._is_login and BSLoginManager._login_func == func:
-            bs.logout()
-            BSLoginManager._is_login = False
-            BSLoginManager._login_func = None
+    def is_login():
+        with threading.Lock():
+            return BSLoginManager.is_login_weak()
+
+    @staticmethod
+    def login():
+        with threading.Lock():
+            if BSLoginManager.is_login_weak():
+                bs.login()
+            BSLoginManager._login_num = BSLoginManager._login_num + 1
+
+    @staticmethod
+    def logout():
+        with threading.Lock():
+            BSLoginManager._login_num = BSLoginManager._login_num - 1
+            if BSLoginManager.is_login_weak():
+                bs.logout()
 
     @staticmethod
     def bs_login(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             try:
-                BSLoginManager.login(func)
+                BSLoginManager.login()
                 return func(*args, **kwargs)
             finally:
-                BSLoginManager.logout(func)
+                BSLoginManager.logout()
 
         return wrapper
 
