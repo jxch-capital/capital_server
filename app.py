@@ -1,6 +1,7 @@
 from flask import Flask
 from routes import routes
 import logging
+from flask_cors import CORS
 
 logging.basicConfig(level=logging.INFO)
 
@@ -8,6 +9,8 @@ app = Flask(__name__)
 
 for route in routes:
     app.register_blueprint(route)
+
+CORS(app, supports_credentials=True)
 
 
 @app.route('/')
