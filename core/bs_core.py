@@ -109,6 +109,7 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date
     df.drop(columns=['code'])
     df = ssu.stockstats_default(df)
     df['code'] = codes
+    df.sort_values(by=['date'], ascending=True, inplace=True)
     return df
 
 

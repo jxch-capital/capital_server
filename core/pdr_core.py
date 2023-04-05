@@ -4,6 +4,7 @@ import datetime
 import utils.fun_utils as fun_utils
 from functools import lru_cache
 from utils.cache_utils import daily_cache_manager
+import logging
 
 def_ds = 'stooq'
 
@@ -15,7 +16,12 @@ def data_reader(code, start_date, end_date=datetime.datetime.now(), data_source=
     df = web.DataReader(code, data_source, start_date, end_date)
     df = ssu.stockstats_default(df)
     df['code'] = code
-    return df
+    try:
+        df.sort_values(by=['Date'], ascending=True, inplace=True)
+    except BaseException:
+        logging.log(logging.ERROR, f"error: {code} res: {df}")
+    finally:
+        return df
 
 
 def data_reader_codes(codes, start_date, end_date=datetime.datetime.now(), data_source=def_ds):
