@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 import core.bs_core as bs_core
 import core.pdr_core as pdr_core
+import core.yahoo_core as yahoo_core
 import utils.date_utils as date_utils
 from utils.cache_utils import daily_cache_manager
 from functools import lru_cache
@@ -12,6 +13,7 @@ date_str_pattern = '%Y-%m-%d'
 class QueryKServices(Enum):
     BS = 'bs'
     PDR = 'pdr'
+    YAHOO = 'yf'
 
 
 def convert_pattern(date_str, new_pattern):
@@ -79,6 +81,22 @@ class PDRQueryKService(QueryKService):
         return pdr_core.data_reader_codes_json(codes, date_utils.str_to_date(start_date_str, date_str_pattern),
                                                date_utils.str_to_date(end_date_str, date_str_pattern),
                                                data_source=PDRQueryKService.ds(service_code))
+
+
+class YahooQueryKService(QueryKService):
+    @staticmethod
+    def support(service_code) -> bool:
+        return service_code == QueryKServices.YAHOO.value
+
+    @staticmethod
+    def query_k(service_code, codes, start_date_str, end_date_str):
+        return yahoo_core.download_codes_json(codes, convert_pattern(start_date_str, yahoo_core.pattern),
+                                              convert_pattern(end_date_str, yahoo_core.pattern))
+
+    @staticmethod
+    def query_k_json(service_code, codes, start_date_str, end_date_str):
+        return yahoo_core.download_codes_json(codes, convert_pattern(start_date_str, yahoo_core.pattern),
+                                              convert_pattern(end_date_str, yahoo_core.pattern))
 
 
 def query_k(service_code, codes, start_date, end_date):
