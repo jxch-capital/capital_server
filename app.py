@@ -15,7 +15,7 @@ CORS(app, supports_credentials=True)
 
 if app.config['ENV'] == 'development':
     proxy('localhost', 10808)
-elif app.config['FLASK_NEED_PROXY']:
+elif 'FLASK_NEED_PROXY' in app.config and app.config['FLASK_NEED_PROXY']:
     proxy(app.config['FLASK_PROXY_HOST'], app.config['FLASK_PROXY_PORT'])
 
 
