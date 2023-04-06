@@ -4,6 +4,7 @@ Flask_Cors==3.0.10
 pandas==1.5.3
 pandas_datareader==0.10.0
 pre_request==2.1.5
+pytz==2022.7.1
 requests==2.28.2
 SocksiPy_branch==1.01
 stockstats==0.5.1
