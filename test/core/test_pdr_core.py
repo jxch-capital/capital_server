@@ -15,19 +15,13 @@ end = tz.localize(dt.today())
 
 socks.setdefaultproxy(socks.SOCKS5, "localhost", 10808)
 socket.socket = socks.socksocket
+#
+#
+# # data = urllib.request.urlopen("http://www.youtube.com").read()
+# # df = web.DataReader('GE', 'yahoo', start='2019-09-10', end='2019-10-09')
+# df = yf.download('USDJPY=X', start='2019-09-10', end='2019-10-09')
+# print(df)
 
-
-# data = urllib.request.urlopen("http://www.youtube.com").read()
-# df = web.DataReader('GE', 'yahoo', start='2019-09-10', end='2019-10-09')
-df = yf.download('USDJPY=X', start='2019-09-10', end='2019-10-09')
+df = pdr.data_reader('AAPL.US', '2020-01-01', date_utils.now_date_str('%Y-%m-%d'))
 print(df)
-
-# for ds in pdr.k_data_source_arr:
-#     try:
-#         df = pdr.data_reader('USD/JPY', '2020-01-01', date_utils.now_date_str('%Y-%m-%d'), ds)
-#         if not df.empty:
-#             print(df)
-#             break
-#     except BaseException:
-#         print(f'error: {ds}')
 

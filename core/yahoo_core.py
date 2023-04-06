@@ -5,6 +5,7 @@ import utils.stockstats_utils as ssu
 import utils.fun_utils as fun_utils
 from functools import lru_cache
 from utils.cache_utils import daily_cache_manager
+import pandas as pd
 
 tz = pytz.timezone("America/New_York")
 pattern = '%Y-%m-%d'
@@ -29,8 +30,11 @@ def download(code, start_str, end_str=du.now_date_str(pattern)):
 def download_codes(code_arr, start_str, end_str=du.now_date_str(pattern), timezone=tz):
     df_arr = []
     for code in code_arr:
-        df = download(code, start_str, end_str)
-        df_arr.append(df)
+        try:
+            df = download(code, start_str, end_str)
+            df_arr.append(df)
+        except BaseException:
+            df_arr.append(pd.DataFrame.from_records([{'code': code}]))
     return df_arr
 
 

@@ -12,5 +12,5 @@ tz = pytz.timezone("America/New_York")
 start = tz.localize(dt(2013, 1, 1))
 end = tz.localize(dt.today())
 
-res = yahoo.download_codes_json(['USD_I'], start_str=du.last_n_days_str(30, yahoo.pattern))
+res = yahoo.download_codes_json(['6005fsafdsafas19.S3S'], start_str=du.last_n_days_str(30, yahoo.pattern))
 print(res)
