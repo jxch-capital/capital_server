@@ -14,9 +14,11 @@ pattern = '%Y-%m-%d'
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
 def download(code, start_str, end_str=du.now_date_str(pattern)):
-    # df = yf.download(code, start=timezone.localize(du.str_to_date(start_str, pattern)),
-    #                  end=timezone.localize(du.str_to_date(end_str, pattern)))
-    df = yf.download(code, start=start_str, end=end_str, period='1d')
+    try:
+        df = yf.download(code, start=start_str, end=end_str, period='1d')
+    except BaseException:
+        df = yf.download(code, start=start_str, end=end_str, period='max')
+
     df = ssu.stockstats_default(df)
     df['code'] = code
     df.sort_values(by=['Date'], ascending=True, inplace=True)
