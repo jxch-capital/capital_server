@@ -9,7 +9,6 @@ import pandas as pd
 
 import utils.stockstats_utils as ssu
 import utils.date_utils as date_utils
-from utils.cache_utils import daily_cache_manager
 
 bs_date_str_pattern = '%Y-%m-%d'
 
@@ -90,7 +89,6 @@ def rs_to_dataframe(rs):
     return pd.DataFrame(data_list, columns=rs.fields)
 
 
-@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
 @BSLoginManager.bs_login
@@ -122,7 +120,6 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date
     return df
 
 
-@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @BSLoginManager.bs_login
 def query_daily_k_by_codes_cache(codes_str, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
@@ -138,7 +135,6 @@ def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_da
     return query_daily_k_by_codes_cache(','.join(codes), start_date_str, end_date_str)
 
 
-@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @BSLoginManager.bs_login
 def query_daily_k_json_by_codes_cache(codes_str, start_date_str,
@@ -158,7 +154,6 @@ def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.n
     return query_daily_k_json_by_codes_cache(','.join(codes), start_date_str, end_date_str)
 
 
-@daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @BSLoginManager.bs_login
 def query_daily_k_json_by_names_cache(names_str, start_date_str,

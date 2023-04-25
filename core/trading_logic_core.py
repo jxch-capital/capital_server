@@ -9,8 +9,6 @@ import utils.fun_utils as fun_utils
 date_str_pattern = '%Y-%m-%d'
 
 
-@daily_cache_manager
-@lru_cache(maxsize=1, typed=True)
 @fun_utils.fun_log
 def breath_list_json_str():
     headers = {
@@ -23,12 +21,11 @@ def breath_list_json_str():
     return res_text
 
 
-@daily_cache_manager
-@lru_cache(maxsize=1, typed=True)
+@lru_cache(maxsize=2, typed=True)
 @fun_utils.fun_log
 def query_breath(start_date, end_date=date_utils.today()):
     obj = {}
-    for lis in json.loads(breath_list_json_str()):
+    for lis in json.loads(breath_list_json_str(end_date)):
         if lis[2] not in obj:
             obj[lis[2]] = []
         breath_date = date_utils.str_to_date(lis[0], date_str_pattern)
@@ -37,8 +34,7 @@ def query_breath(start_date, end_date=date_utils.today()):
     return obj
 
 
-@daily_cache_manager
-@lru_cache(maxsize=1, typed=True)
+@lru_cache(maxsize=2, typed=True)
 @fun_utils.fun_log
 def query_breath_json(start_date, end_date=date_utils.today()):
     return json.dumps(query_breath(start_date, end_date))
