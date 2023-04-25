@@ -25,7 +25,7 @@ def breath_list_json_str():
 @fun_utils.fun_log
 def query_breath(start_date, end_date=date_utils.today()):
     obj = {}
-    for lis in json.loads(breath_list_json_str(end_date)):
+    for lis in json.loads(breath_list_json_str()):
         if lis[2] not in obj:
             obj[lis[2]] = []
         breath_date = date_utils.str_to_date(lis[0], date_str_pattern)
