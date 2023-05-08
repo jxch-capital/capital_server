@@ -21,11 +21,16 @@ def download(code, start_str, end_str=du.now_date_str(pattern), interval='1d'):
     except BaseException:
         df = yf.download(code, start=start_str, end=end_str, period='max', interval=interval)
 
+    if 'Datetime' == df.index.name:
+        df['Date'] = df.index
+
     df = ssu.stockstats_default(df)
     df['code'] = code
-    df.sort_values(by=['Date'], ascending=True, inplace=True)
+
+    # df.sort_values(by=['Date'], ascending=True, inplace=True)
 
     return df
+
 
 
 def download_codes(code_arr, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):

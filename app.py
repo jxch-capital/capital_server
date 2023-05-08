@@ -26,13 +26,12 @@ def hello_world():  # put application's code here
 
 @app.errorhandler(Exception)
 def error_handler(e):
-    print("12312132")
+
     data = {
         "code": -1,
         "msg": str(e),
         "data": None
     }
-    print(e)
 
     return jsonify(data)
 
