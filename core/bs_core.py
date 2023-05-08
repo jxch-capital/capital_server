@@ -11,6 +11,7 @@ import utils.stockstats_utils as ssu
 import utils.date_utils as date_utils
 
 bs_date_str_pattern = '%Y-%m-%d'
+interval_support = [None, 'd', 'w', 'm', '5', '15', '30', '60']
 
 
 class BSLoginManager(object):
@@ -92,10 +93,12 @@ def rs_to_dataframe(rs):
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
 @BSLoginManager.bs_login
-def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern),
+                          frequency="d"):
     rs = bs.query_history_k_data_plus(code.replace('"', ''),
                                       "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST",
-                                      start_date=start_date_str, end_date=end_date_str, frequency="d", adjustflag="3")
+                                      start_date=start_date_str, end_date=end_date_str, frequency=frequency,
+                                      adjustflag="3")
     df = rs_to_dataframe(rs)
     if df.empty:
         logging.log(logging.INFO, "query_daily_k_by_code: df is empty")
@@ -122,25 +125,27 @@ def query_daily_k_by_code(code, start_date_str, end_date_str=date_utils.now_date
 
 @lru_cache(maxsize=10000, typed=True)
 @BSLoginManager.bs_login
-def query_daily_k_by_codes_cache(codes_str, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+def query_daily_k_by_codes_cache(codes_str, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern),
+                                 frequency="d"):
     codes = codes_str.replace('"', '').split(',')
     df_arr = []
     for code in codes:
-        df = query_daily_k_by_code(code, start_date_str, end_date_str)
+        df = query_daily_k_by_code(code, start_date_str, end_date_str, frequency=frequency)
         df_arr.append(df)
     return df_arr
 
 
-def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
-    return query_daily_k_by_codes_cache(','.join(codes), start_date_str, end_date_str)
+def query_daily_k_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern),
+                           frequency="d"):
+    return query_daily_k_by_codes_cache(','.join(codes), start_date_str, end_date_str, frequency=frequency)
 
 
 @lru_cache(maxsize=10000, typed=True)
 @BSLoginManager.bs_login
 def query_daily_k_json_by_codes_cache(codes_str, start_date_str,
-                                      end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
+                                      end_date_str=date_utils.now_date_str(bs_date_str_pattern), frequency="d"):
     codes = codes_str.replace('"', '').split(',')
-    df_arr = query_daily_k_by_codes(codes, start_date_str, end_date_str)
+    df_arr = query_daily_k_by_codes(codes, start_date_str, end_date_str, frequency=frequency)
     json_arr = []
     for df in df_arr:
         json_str = df.to_json(orient='records')
@@ -150,8 +155,9 @@ def query_daily_k_json_by_codes_cache(codes_str, start_date_str,
     return '{' + ','.join(json_arr) + '}'
 
 
-def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern)):
-    return query_daily_k_json_by_codes_cache(','.join(codes), start_date_str, end_date_str)
+def query_daily_k_json_by_codes(codes, start_date_str, end_date_str=date_utils.now_date_str(bs_date_str_pattern),
+                                frequency="d"):
+    return query_daily_k_json_by_codes_cache(','.join(codes), start_date_str, end_date_str, frequency=frequency)
 
 
 @lru_cache(maxsize=10000, typed=True)

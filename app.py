@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from routes import routes
 import logging
 from flask_cors import CORS
@@ -22,6 +22,19 @@ elif 'FLASK_NEED_PROXY' in app.config and app.config['FLASK_NEED_PROXY']:
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello Capital!'
+
+
+@app.errorhandler(Exception)
+def error_handler(e):
+    print("12312132")
+    data = {
+        "code": -1,
+        "msg": str(e),
+        "data": None
+    }
+    print(e)
+
+    return jsonify(data)
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ fields_query_k_json = {
     "codes": Rule(type=list, required=True, dest="codes"),
     "start": Rule(type=str, required=True, dest="start"),
     "end": Rule(type=str, required=True, dest="end"),
+    "interval": Rule(type=str, required=False, dest="interval"),
 }
 
 fields_query_breath_json = {
@@ -27,10 +28,11 @@ fields_query_breath_json = {
 @pre.catch(fields_query_k_json)
 def query_k_json():
     service_code = param("service_code", request)
+    interval = param("interval", request)
     codes = param_list("codes", request)
     start = convert_pattern(param("start", request), date_str_pattern, query_k_service.date_str_pattern)
     end = convert_pattern(param("end", request), date_str_pattern, query_k_service.date_str_pattern)
-    return query_k_service.query_k_json(service_code, codes, start, end)
+    return query_k_service.query_k_json(service_code, codes, start, end, interval)
 
 
 @base_route.route("/base/query_breath_json", methods=["post", "get"])
