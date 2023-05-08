@@ -12,7 +12,7 @@ tz = pytz.timezone("Asia/Shanghai")
 start = tz.localize(dt(2013, 1, 1))
 end = tz.localize(dt.today())
 
-res = yahoo.download_codes_json(['SPY'], start_str=du.last_n_days_str(10, yahoo.pattern), interval='5m')
+res = yahoo.download_codes(['SPY'], start_str=du.last_n_days_str(10, yahoo.pattern), interval='60m')
 print(res)
 
 
