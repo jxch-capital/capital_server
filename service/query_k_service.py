@@ -4,8 +4,10 @@ import core.bs_core as bs_core
 import core.pdr_core as pdr_core
 import core.yahoo_core as yahoo_core
 import utils.date_utils as date_utils
+import service.stock_pool_service as sps
 from utils.cache_utils import daily_cache_manager
 from functools import lru_cache
+import json
 
 date_str_pattern = '%Y-%m-%d'
 
@@ -116,3 +118,19 @@ def query_k_json(service_code, codes, start_date, end_date, interval=None):
                 return service.query_k_json(service_code, codes, start_date, end_date, interval)
             else:
                 return service.query_k_json(service_code, codes, start_date, end_date)
+
+
+def alias_json_str(json_str, aliases):
+    data = json.loads(json_str)
+    return json.dumps({alias: data[key] for key, alias in zip(data.keys(), aliases)})
+
+
+def query_k_json_by_stock_pool(stock_pool, start_date, end_date, interval=None):
+    sp = sps.get_stock_pool(stock_pool)
+    for service in QueryKService.__subclasses__():
+        if service.support(sp['engine'], interval):
+            if interval:
+                k_json = service.query_k_json(sp['engine'], sp['codes'], start_date, end_date, interval)
+            else:
+                k_json = service.query_k_json(sp['engine'], sp['codes'], start_date, end_date)
+            return alias_json_str(k_json, sp['codes_alias'])

@@ -15,7 +15,7 @@ interval_support = [None, '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1
 @daily_cache_manager
 @lru_cache(maxsize=10000, typed=True)
 @fun_utils.fun_log
-def download(code, start_str, end_str=du.now_date_str(pattern), interval='1d'):
+def download(code, start_str, end_str=du.now_date_str(pattern), interval='1d', use_index=True):
     try:
         df = yf.download(code, start=start_str, end=end_str, period='1d', interval=interval)
     except BaseException:
@@ -24,7 +24,8 @@ def download(code, start_str, end_str=du.now_date_str(pattern), interval='1d'):
     if 'Datetime' == df.index.name:
         df['Date'] = df.index
 
-    df = ssu.stockstats_default(df)
+    if use_index:
+        df = ssu.stockstats_default(df)
     df['code'] = code
 
     # df.sort_values(by=['Date'], ascending=True, inplace=True)
