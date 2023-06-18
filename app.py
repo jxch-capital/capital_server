@@ -14,10 +14,9 @@ for route in routes:
 CORS(app, supports_credentials=True)
 
 
-# if app.debug:
-#     proxy('localhost', 10808)
+if app.debug:
+    proxy('localhost', 10808)
 
-proxy('localhost', 10808)
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello Capital!'
