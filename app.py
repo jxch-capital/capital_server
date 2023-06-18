@@ -13,12 +13,11 @@ for route in routes:
 
 CORS(app, supports_credentials=True)
 
-if app.config['ENV'] == 'development':
-    proxy('localhost', 10808)
-elif 'FLASK_NEED_PROXY' in app.config and app.config['FLASK_NEED_PROXY']:
-    proxy(app.config['FLASK_PROXY_HOST'], app.config['FLASK_PROXY_PORT'])
 
+# if app.debug:
+#     proxy('localhost', 10808)
 
+proxy('localhost', 10808)
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello Capital!'
@@ -26,7 +25,6 @@ def hello_world():  # put application's code here
 
 @app.errorhandler(Exception)
 def error_handler(e):
-
     data = {
         "code": -1,
         "msg": str(e),
