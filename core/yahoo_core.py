@@ -33,7 +33,6 @@ def download(code, start_str, end_str=du.now_date_str(pattern), interval='1d', u
     return df
 
 
-
 def download_codes(code_arr, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
     df_arr = []
     for code in code_arr:
@@ -45,8 +44,7 @@ def download_codes(code_arr, start_str, end_str=du.now_date_str(pattern), interv
     return df_arr
 
 
-def download_codes_json(codes, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
-    df_arr = download_codes(codes, start_str, end_str, interval=interval)
+def df_arr2json(df_arr):
     json_arr = []
     for df in df_arr:
         json_str = df.to_json(orient='records')
@@ -54,3 +52,37 @@ def download_codes_json(codes, start_str, end_str=du.now_date_str(pattern), inte
             code = df['code'][0].replace('.', '').replace('^', '')
             json_arr.append('\"' + code + '\":' + json_str + '')
     return '{' + ','.join(json_arr) + '}'
+
+
+def download_codes_json(codes, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
+    df_arr = download_codes(codes, start_str, end_str, interval=interval)
+    return df_arr2json(df_arr)
+
+
+def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz,
+                         use_index=True):
+    data = yf.download(tickers=code_arr, start=start_str, end=end_str, interval=interval)
+    df_arr = []
+    for code in code_arr:
+        df = data.xs(key=code, level=1, axis=1).copy()
+        df.dropna(inplace=True)
+        if 'Datetime' == df.index.name:
+            df['Date'] = df.index
+        if use_index:
+            df = ssu.stockstats_default(df)
+        df['code'] = code
+        df_arr.append(df)
+    return df_arr
+
+
+@daily_cache_manager
+@lru_cache(maxsize=10000, typed=True)
+@fun_utils.fun_log
+def download_codes_batch_by_codes_str(codes_str, start_str, end_str=du.now_date_str(pattern), interval='1d',
+                                      timezone=tz):
+    return download_codes_batch(codes_str.split(','), start_str, end_str, interval, timezone)
+
+
+def download_codes_json_batch(codes, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
+    df_arr = download_codes_batch_by_codes_str(','.join(codes), start_str, end_str, interval=interval)
+    return df_arr2json(df_arr)

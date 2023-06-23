@@ -1,7 +1,8 @@
 # import socket
 # import socks
-# import core.yahoo_core as yahoo
-# import yfinance as yf
+import core.yahoo_core as yahoo
+import yfinance as yf
+import utils.proxy_utils as pu
 # from datetime import datetime as dt
 # import pytz
 # import utils.date_utils as du
@@ -18,3 +19,10 @@
 #
 # # res = yf.download('SPY', start=du.last_n_days_str(10, yahoo.pattern), period='1d', interval='1h')
 # # print(res)
+
+pu.proxy()
+
+data = yahoo.download_codes_json_batch(codes=['QQQ','SPY'], start_str='2010-01-01')
+
+print(data)
+

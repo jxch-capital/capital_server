@@ -93,13 +93,14 @@ class YahooQueryKService(QueryKService):
 
     @staticmethod
     def query_k(service_code, codes, start_date_str, end_date_str):
-        return yahoo_core.download_codes_json(codes, convert_pattern(start_date_str, yahoo_core.pattern),
-                                              convert_pattern(end_date_str, yahoo_core.pattern))
+        return yahoo_core.download_codes_json_batch(codes, convert_pattern(start_date_str, yahoo_core.pattern),
+                                                    convert_pattern(end_date_str, yahoo_core.pattern))
 
     @staticmethod
     def query_k_json(service_code, codes, start_date_str, end_date_str, interval="1d"):
-        return yahoo_core.download_codes_json(codes, convert_pattern(start_date_str, yahoo_core.pattern),
-                                              convert_pattern(end_date_str, yahoo_core.pattern), interval=interval)
+        return yahoo_core.download_codes_json_batch(codes, convert_pattern(start_date_str, yahoo_core.pattern),
+                                                    convert_pattern(end_date_str, yahoo_core.pattern),
+                                                    interval=interval)
 
 
 def query_k(service_code, codes, start_date, end_date, interval=None):
