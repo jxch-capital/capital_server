@@ -60,7 +60,7 @@ def download_codes_json(codes, start_str, end_str=du.now_date_str(pattern), inte
 
 
 def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz,
-                         use_index=True):
+                         use_index=False):
     data = yf.download(tickers=code_arr, start=start_str, end=end_str, interval=interval)
     df_arr = []
     for code in code_arr:
@@ -71,6 +71,7 @@ def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), 
         if use_index:
             df = ssu.stockstats_default(df)
         df['code'] = code
+        df.columns = df.columns.str.lower()
         df_arr.append(df)
     return df_arr
 
