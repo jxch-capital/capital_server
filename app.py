@@ -3,6 +3,8 @@ from routes import routes
 import logging
 from flask_cors import CORS
 from utils.proxy_utils import proxy
+from apscheduler.schedulers.background import BackgroundScheduler
+from service.db_keep_alive import update
 
 logging.basicConfig(level=logging.INFO)
 
@@ -13,9 +15,9 @@ for route in routes:
 
 CORS(app, supports_credentials=True)
 
-
 if app.debug:
     proxy('localhost', 10808)
+
 
 @app.route('/')
 def hello_world():  # put application's code here
@@ -35,3 +37,7 @@ def error_handler(e):
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(update, "cron", hour=0)
+    scheduler.start()

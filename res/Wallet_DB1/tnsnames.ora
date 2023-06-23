@@ -1,0 +1,8 @@
+db1_high = (description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-phoenix-1.oraclecloud.com))(connect_data=(service_name=g8d9866e3a8a122_db1_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
+
+db1_low = (description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-phoenix-1.oraclecloud.com))(connect_data=(service_name=g8d9866e3a8a122_db1_low.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
+
+db1_medium = (description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-phoenix-1.oraclecloud.com))(connect_data=(service_name=g8d9866e3a8a122_db1_medium.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
+
+
+
