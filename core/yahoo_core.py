@@ -66,8 +66,7 @@ def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), 
     for code in code_arr:
         df = data.xs(key=code, level=1, axis=1).copy()
         df.dropna(inplace=True)
-        if 'Datetime' == df.index.name:
-            df['Date'] = df.index
+        df['Date'] = df.index
         if use_index:
             df = ssu.stockstats_default(df)
         df['code'] = code
@@ -77,7 +76,7 @@ def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), 
 
 
 @daily_cache_manager
-@lru_cache(maxsize=10000, typed=True)
+@lru_cache(maxsize=40, typed=True)
 @fun_utils.fun_log
 def download_codes_batch_by_codes_str(codes_str, start_str, end_str=du.now_date_str(pattern), interval='1d',
                                       timezone=tz):
