@@ -61,18 +61,32 @@ def download_codes_json(codes, start_str, end_str=du.now_date_str(pattern), inte
 
 def download_codes_batch(code_arr, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz,
                          use_index=False):
-    data = yf.download(tickers=code_arr, start=start_str, end=end_str, interval=interval)
-    df_arr = []
-    for code in code_arr:
-        df = data.xs(key=code, level=1, axis=1).copy()
+    if len(code_arr) > 1:
+        data = yf.download(tickers=code_arr, start=start_str, end=end_str, interval=interval)
+        df_arr = []
+        for code in code_arr:
+            df = data.xs(key=code, level=1, axis=1).copy()
+            df.dropna(inplace=True)
+            df['Date'] = df.index
+            if use_index:
+                df = ssu.stockstats_default(df)
+            df['code'] = code
+            df.columns = df.columns.str.lower()
+            df_arr.append(df)
+        return df_arr
+    elif len(code_arr) == 1:
+        df = yf.download(tickers=code_arr, start=start_str, end=end_str, interval=interval)
+        df_arr = []
         df.dropna(inplace=True)
         df['Date'] = df.index
         if use_index:
             df = ssu.stockstats_default(df)
-        df['code'] = code
+        df['code'] = code_arr[0]
         df.columns = df.columns.str.lower()
         df_arr.append(df)
-    return df_arr
+        return df_arr
+    else:
+        raise AttributeError(f"入参没有code")
 
 
 @daily_cache_manager
