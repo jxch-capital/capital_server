@@ -20,9 +20,26 @@ import utils.proxy_utils as pu
 # # res = yf.download('SPY', start=du.last_n_days_str(10, yahoo.pattern), period='1d', interval='1h')
 # # print(res)
 
+# pu.proxy()
+
+# data = yahoo.download_codes_json_batch2gpt(codes=['AAPL'], start_str='2023-7-01')
+
+# print(data)
+
+import utils.proxy_utils as pu
+
 pu.proxy()
 
-data = yahoo.download_codes_json_batch(codes=['QQQ','SPY'], start_str='2010-01-01')
+import core.yahoo_core as yh
+import core.number_regular as reg
 
-print(data)
+df_arr = yh.download_codes_batch_by_codes_str(codes_str='QQQ,SPY', start_str='2000-01-01')
 
+for df in df_arr:
+    arr = df[['open', 'close', 'high', 'low']].values
+    print(df.iloc[2]['date'])
+
+# reg.find_similar_sequences( , ,0.1)
+
+
+# print(df)

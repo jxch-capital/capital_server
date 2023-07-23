@@ -100,3 +100,27 @@ def download_codes_batch_by_codes_str(codes_str, start_str, end_str=du.now_date_
 def download_codes_json_batch(codes, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
     df_arr = download_codes_batch_by_codes_str(','.join(codes), start_str, end_str, interval=interval)
     return df_arr2json(df_arr)
+
+def format_date(x):
+    dt = pd.to_datetime(x)
+    if dt.hour == 0 and dt.minute == 0 and dt.second == 0:
+        return dt.strftime('%Y-%m-%d')
+    else:
+        return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+def df_arr2json_gpt(df_arr):
+    json_arr = []
+    for df in df_arr:
+        df['date'] = df['date'].apply(format_date)
+        df = df.drop('adj close', axis=1)
+        df = df.round(2)
+
+        json_str = df.to_json(orient='records')
+        if json_str != '[]':
+            code = df['code'][0].replace('.', '').replace('^', '')
+            json_arr.append('\"' + code + '\":' + json_str + '')
+    return '{' + ','.join(json_arr) + '}'
+
+def download_codes_json_batch2gpt(codes, start_str, end_str=du.now_date_str(pattern), interval='1d', timezone=tz):
+    df_arr = download_codes_batch_by_codes_str(','.join(codes), start_str, end_str, interval=interval)
+    return df_arr2json_gpt(df_arr)
